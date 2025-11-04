@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-center justify-between mb-5">
+  <div>
+    <h2 class="text-2xl font-bold">Admin • Meses consolidados</h2>
+    <p class="text-slate-400 text-sm">Gerencie uploads, exporte relatórios e limpe meses.</p>
+  </div>
+  <a href="{{ url_for('bp.public_index') }}"
+     class="px-3 py-2 rounded bg-slate-800 hover:bg-slate-700">← Voltar ao Dashboard</a>
+</div>
+
+<!-- Upload -->
+<div class="grid md:grid-cols-2 gap-4 mb-6">
+  <form method="post" action="{{ url_for('bp.admin_upload') }}" enctype="multipart/form-data"
+        class="bg-slate-900 border border-slate-800 rounded p-4">
+    <h3 class="font-semibold mb-3">Novo upload (CSV/Excel de chamadas)</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+      <div>
+        <label class="block text-sm mb-1">Mês (AAAA-MM)</label>
+        <input name="ym" placeholder="2025-09" required
+               class="w-full px-3 py-2 rounded bg-slate-800 border border-slate-700 focus:outline-none focus:border-sky-600">
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-sm mb-1">Arquivo</label>
+        <input type="file" name="file" required
+               class="w-full text-sm file:mr-3 file:px-3 file:py-2 file:rounded file:border-0 file:bg-slate-700 file:text-slate-100
+                      hover:file:bg-slate-600 px-2 py-2 rounded bg-slate-800 border border-slate-700">
+      </div>
+    </div>
+    <button class="mt-3 px-3 py-2 rounded bg-sky-700 hover:bg-sky-600">Enviar e consolidar</button>
+  </form>
+
+  <div class="bg-slate-900 border border-slate-800 rounded p-4">
+    <h3 class="font-semibold mb-3">Dicas rápidas</h3>
+    <ul class="list-disc list-inside text-sm text-slate-300 space-y-1">
+      <li>O sistema identifica automaticamente a coluna de <em>Loja</em> e o status da ligação.</li>
+      <li>Se a fila “Televendas” não for encontrada, todo o arquivo é considerado (aviso aparece no topo).</li>
+      <li>“Exportar Excel” gera <strong>Resumo</strong> + uma aba por loja com Data, Hora e Status.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Tabela de meses -->
+<div class="overflow-hidden rounded border border-slate-800">
+  <table class="min-w-full text-sm">
+    <thead class="bg-slate-800 text-slate-100">
+      <tr>
+        <th class="px-4 py-2 text-left">Mês</th>
+        <th class="px-4 py-2 text-left">Uploads</th>
+        <th class="px-4 py-2 text-left">Lojas</th>
+        <th class="px-4 py-2 text-left">Ações</th>
+      </tr>
+    </thead>
+    <tbody class="bg-slate-900">
+      {% for m in months %}
+      <tr class="border-t border-slate-800">
+        <td class="px-4 py-2 whitespace-nowrap">
+          <a class="text-sky-400 hover:underline" href="{{ url_for('bp.public_report', ym=m['ym']) }}">
+            {{ m['ym'] }}
+          </a>
+        </td>
+        <td class="px-4 py-2">{{ m['uploads'] }}</td>
+        <td class="px-4 py-2">{{ m['lojas'] }}</td>
+        <td class="px-4 py-2">
+          <div class="flex flex-wrap gap-2">
+            <a class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700"
+               href="{{ url_for('bp.public_report', ym=m['ym']) }}">Abrir relatório</a>
+
+            <!-- CORREÇÃO AQUI: export_excel (não export_calls_excel) -->
+            <a class="px-3 py-1.5 rounded bg-emerald-700 hover:bg-emerald-600"
+               href="{{ url_for('bp.export_excel', ym=m['ym']) }}">Exportar Excel</a>
+
+            <form method="post" action="{{ url_for('bp.admin_delete', ym=m['ym']) }}"
+                  onsubmit="return confirm('Remover mês {{ m['ym'] }}? Esta ação apagará uploads e métricas.');">
+              <button class="px-3 py-1.5 rounded bg-rose-700 hover:bg-rose-600" type="submit">Apagar</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr class="border-t border-slate-800">
+        <td class="px-4 py-3 text-slate-400" colspan="4">Nenhum mês consolidado ainda.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

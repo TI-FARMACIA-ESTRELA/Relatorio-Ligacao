@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Definir volumes por loja — {{ ym }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="header-row">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='LOGO-ESTRELA-1024x387.png') }}" alt="Estrela" style="height:52px;object-fit:contain" />
+      <div class="brand-titles">
+        <h1>Relatório de Telefonia</h1>
+        <p class="subtitle">Volumes por loja — <strong>{{ ym }}</strong></p>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('bp.admin_dashboard') }}">⇦ Voltar ao Admin</a>
+      <a class="btn btn--ghost" href="{{ url_for('bp.public_report', ym=ym) }}">Ver relatório público</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="muted">
+      Preencha <strong>Volume Total</strong> (ligações que entraram no número da loja no mês).
+      A % de perda usa a fórmula:
+      <code>perdidas ÷ volume_total × 100</code>.
+    </p>
+
+    <form method="POST" class="table-form">
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Loja</th>
+              <th class="num">Não atenteu<br><small>(Fila Estrela Televendas)</small></th>
+              <th class="num">Vendas atendeu</th>
+              <th class="num">Volume Total<br><small>(digite aqui)</small></th>
+              <th class="num">% Perda</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in rows %}
+            <tr>
+              <td>{{ r['store'] }}</td>
+              <td class="num">{{ r['recebidas'] }}</td>
+              <td class="num">{{ r['perdidas'] }}</td>
+              <td class="num">
+              <input
+                    type="number"
+                    name="vol_{{ r['store'] }}"
+                    class="input"
+                    value="{{ r['volume_total'] or '' }}"
+                    placeholder="Total de ligações recebidas"
+                    required
+                    min="1"
+                    step="1"
+                    inputmode="numeric"
+                    pattern="[0-9]+"
+                    />  
+              </td>
+              <td class="num">
+                {% set pct = (r['pct_perda'] or 0.0)|round(2) %}
+                <span class="
+                  {% if pct>=15 %}chip chip--danger
+                  {% elif pct>=8 %}chip chip--warn
+                  {% else %}chip chip--ok
+                  {% endif %}">
+                  {{ "%.2f"|format(pct) }}%
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn btn--primary" type="submit">Salvar volumes e recalcular %</button>
+        <a class="btn btn--ghost" href="{{ url_for('bp.public_report', ym=ym) }}">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+  .header-row { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px;}
+  .brand { display:flex; align-items:center; gap:14px; }
+  .brand-titles h1 { margin:0; font-size:22px; }
+  .brand-titles .subtitle{ margin:0; color:#6b7280; }
+  .actions .btn { margin-left:8px; }
+  .card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+  .muted { color:#6b7280; margin:0 0 12px 0; }
+  .table-scroll { overflow:auto; border:1px solid #e5e7eb; border-radius:12px; }
+  .table { width:100%; border-collapse:separate; border-spacing:0; min-width:700px;}
+  .table th, .table td { padding:10px 12px; border-bottom:1px solid #f1f5f9; vertical-align:middle;}
+  .table thead th { background:#f8fafc; font-weight:600; color:#334155; position:sticky; top:0; z-index:1;}
+  .table tbody tr:hover { background:#f9fafb; }
+  .num { text-align:right; white-space:nowrap; }
+  .in-num { width:120px; padding:6px 8px; border:1px solid #d1d5db; border-radius:10px; text-align:right;}
+  .btn { display:inline-block; padding:8px 12px; border-radius:10px; border:1px solid #e5e7eb; background:#fff; color:#111827; text-decoration:none; }
+  .btn--ghost { background:transparent; }
+  .btn--primary { background:#0ea5e9; border-color:#0ea5e9; color:#fff; }
+  .btn--primary:hover { filter:brightness(0.95); }
+  .btn--danger { background:#ef4444; border-color:#ef4444; color:#fff; }
+  .btn--sm { padding:6px 10px; font-size:14px; }
+  .footer-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px;}
+  .chip { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; }
+  .chip--ok { background:#dcfce7; color:#14532d; }
+  .chip--warn { background:#fef9c3; color:#713f12; }
+  .chip--danger { background:#fee2e2; color:#7f1d1d; }
+
+
+  /* Garante fonte preta dentro do input numérico */
+  .input, input[type="number"] {
+    color: #000 !important;
+    background: #fff;
+  }
+</style>
+{% endblock %}

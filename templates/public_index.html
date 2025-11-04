@@ -1,0 +1,67 @@
+{% extends "base_tw.html" %}
+{% block content %}
+  <!-- título + CTA admin -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight">Relatório Telefonia</h2>
+      <p class="text-slate-400">Consolidação de chamadas por loja • Televendas</p>
+    </div>
+
+    {% if session.get('is_admin') %}
+      <a href="{{ url_for('bp.admin_dashboard') }}"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 shadow-sm shadow-emerald-900/30">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        Admin
+      </a>
+    {% else %}
+      <a href="{{ url_for('bp.admin_login') }}"
+         class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">
+        Entrar como admin
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- seção de meses -->
+  <div class="flex items-center gap-2 mb-3 text-slate-300">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M7 11h10v2H7v-2zm0 4h10v2H7v-2zM5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm0 4v12h14V7H5z"/></svg>
+    <span class="font-medium">Meses consolidados</span>
+  </div>
+
+  {% if not months %}
+    <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+      <p class="text-slate-400">Nenhum mês consolidado ainda. Suba um CSV na área de <a class="text-emerald-400 hover:underline" href="{{ url_for('bp.admin_dashboard') }}">Admin</a>.</p>
+    </div>
+  {% else %}
+    <!-- grid de cartões -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% for m in months %}
+        <a href="{{ url_for('bp.public_report', ym=m['ym']) }}"
+           class="group relative rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-900/70 to-slate-900/30 p-5 transition
+                  hover:-translate-y-0.5 hover:border-emerald-700/60 hover:shadow-[0_10px_30px_-12px] hover:shadow-emerald-900/40">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-widest text-slate-400">Relatório</p>
+              <h3 class="mt-1 text-xl font-semibold">{{ m['ym'] }}</h3>
+            </div>
+            <div class="rounded-lg px-2 py-1 text-xs bg-slate-800/70 text-slate-300 border border-slate-700">
+              Aberto
+            </div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between text-sm">
+            <span class="inline-flex items-center gap-1 text-emerald-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7V3L1 14h4v7l7-8h-4l8-6z"/></svg>
+              Abrir relatório
+            </span>
+            <span class="text-slate-400 group-hover:text-emerald-300 transition">
+              ➜
+            </span>
+          </div>
+
+          <!-- brilho sutil -->
+          <span class="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/5 group-hover:ring-emerald-500/20"></span>
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

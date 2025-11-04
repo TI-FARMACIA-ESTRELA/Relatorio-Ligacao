@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex align-items-center gap-2 mb-3">
+  <h4 class="mb-0">Relatório #{{ upload.id }} — {{ upload.filename }}</h4>
+  <a href="{{ url_for('download', upload_id=upload.id) }}" class="btn btn-warning btn-sm ms-auto">Baixar Excel</a>
+</div>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-primary text-white">Resumo — Lojas → Estrela Televendas</div>
+  <div class="card-body p-0">
+    <table class="table table-striped table-hover table-sm mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Loja</th>
+          <th>Chamadas para Estrela Televendas</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for _, r in resumo.iterrows() %}
+        <tr>
+          <td>{{ r.store }}</td>
+          <td class="fw-bold">{{ r.calls_to_est_telev }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-header bg-info text-white">Detalhe por Loja</div>
+  <div class="card-body">
+    <div class="mb-2">
+      <label class="form-label">Selecionar loja</label>
+      <select id="storeSelect" class="form-select">
+        {% for s in stores %}
+        <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div id="tableWrap" class="table-responsive">
+      <table class="table table-bordered table-sm" id="detailTable">
+        <thead class="table-light">
+          <tr>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Fila</th>
+            <th>Status</th>
+            <th>Status (EN)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for _, r in calls.iterrows() %}
+          <tr data-store="{{ r.store }}">
+            <td>{{ r.date }}</td>
+            <td>{{ r.time }}</td>
+            <td>{{ r.queue }}</td>
+            <td>{{ r.status_raw }}</td>
+            <td>{{ r.status_en }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-muted small mt-2">
+      Legendário rápido: <b>abandoned</b> = customer hung up; <b>evicted system</b> = agent did not answer.
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const select = document.getElementById('storeSelect');
+  const rows = Array.from(document.querySelectorAll('#detailTable tbody tr'));
+  function applyFilter() {
+    const v = select.value;
+    rows.forEach(tr => {
+      tr.style.display = (tr.getAttribute('data-store') === v) ? '' : 'none';
+    });
+  }
+  select.addEventListener('change', applyFilter);
+  applyFilter();
+})();
+</script>
+
+{% endblock %}
