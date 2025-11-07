@@ -43,14 +43,14 @@ RUN addgroup --gid ${APP_GID} appgroup && \
     chown -R appuser:appgroup /app
 USER appuser
 
-# Porta do app (usa 8000 no projeto)
-EXPOSE 8000
+# Porta do app (usa 1327 no projeto)
+EXPOSE 1327
 
 # Healthcheck simples
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD curl -fsS http://127.0.0.1:8000/ >/dev/null || exit 1
+  CMD curl -fsS http://127.0.0.1:1327/ >/dev/null || exit 1
 
-# Gunicorn — 2 workers sync (CPU-bound? aumente depois), bind 0.0.0.0:8000
+# Gunicorn — 2 workers sync (CPU-bound? aumente depois), bind 0.0.0.0:
 # 'app:app' -> arquivo app.py com objeto Flask chamado 'app'
-ENV GUNICORN_CMD_ARGS="--workers=2 --threads=4 --timeout=60 --bind=0.0.0.0:8000 --log-level=info"
+ENV GUNICORN_CMD_ARGS="--workers=2 --threads=4 --timeout=60 --bind=0.0.0.0:1327 --log-level=info"
 CMD ["gunicorn", "app:app"]
