@@ -27,4 +27,4 @@ def _ensure_db():
 if __name__ == "__main__":
     _ensure_db()
     # Sobe o Flask dev server
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=1327, debug=True)
