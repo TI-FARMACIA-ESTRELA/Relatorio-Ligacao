@@ -16,35 +16,62 @@
   <div class="order-bar">
     <span>Ordenação:</span>
     <div class="btn-row">
-  <a class="btn {{ 'active' if order=='loja' else '' }}"
-     href="{{ url_for('bp.public_report', ym=ym, order='loja') }}">Por loja</a>
+      <a class="btn {{ 'active' if order=='loja' else '' }}"
+         href="{{ url_for('bp.public_report', ym=ym, order='loja') }}">Por loja</a>
 
-  <a class="btn {{ 'active' if order=='pct_desc' else '' }}"
-     href="{{ url_for('bp.public_report', ym=ym, order='pct_desc') }}">% perda ↓</a>
+      <a class="btn {{ 'active' if order=='pct_desc' else '' }}"
+         href="{{ url_for('bp.public_report', ym=ym, order='pct_desc') }}">% perda ↓</a>
 
-  <a class="btn {{ 'active' if order=='recebidas_desc' else '' }}"
-     href="{{ url_for('bp.public_report', ym=ym, order='recebidas_desc') }}">Recebidas ↓</a>
+      <a class="btn {{ 'active' if order=='recebidas_desc' else '' }}"
+         href="{{ url_for('bp.public_report', ym=ym, order='recebidas_desc') }}">Recebidas ↓</a>
 
-  <a class="btn {{ 'active' if order=='perdidas_desc' else '' }}"
-     href="{{ url_for('bp.public_report', ym=ym, order='perdidas_desc') }}">Perdidas ↓</a>
+      <a class="btn {{ 'active' if order=='perdidas_desc' else '' }}"
+         href="{{ url_for('bp.public_report', ym=ym, order='perdidas_desc') }}">Perdidas ↓</a>
 
-  <a class="btn {{ 'active' if order=='volume_desc' else '' }}"
-     href="{{ url_for('bp.public_report', ym=ym, order='volume_desc') }}">Volume ↓</a>
-</div>
+      <a class="btn {{ 'active' if order=='volume_desc' else '' }}"
+         href="{{ url_for('bp.public_report', ym=ym, order='volume_desc') }}">Volume ↓</a>
+    </div>
   </div>
+
+  <!-- Barra de informação centralizada acima da tabela -->
+  <div id="info-bar" hidden></div>
 
   <div class="table-scroll">
     <table class="table">
       <thead>
         <tr>
-          <th>Loja</th>
-          <th class="num">Loja não atendeu</th>
-          <th class="num">Vendas não atendeu</th>
-          <th class="num">Volume total recebido</th>
-          <th class="num">% Perda</th>
-          <th>Ações</th>
+          <th>
+            Loja
+            <span class="info" data-msg="Identificação da loja">i</span>
+          </th>
+
+          <th class="num">
+            Loja não atendeu
+            <span class="info" data-msg="Chamadas diretas para a loja que não foram atendidas.">i</span>
+          </th>
+
+          <th class="num">
+            Vendas não atendeu
+            <span class="info" data-msg="Chamadas direcionadas ao setor de Vendas que não foram atendidas.">i</span>
+          </th>
+
+          <th class="num">
+            Volume total recebido
+            <span class="info" data-msg="Total de ligações recebidas (base para cálculo de perda).">i</span>
+          </th>
+
+          <th class="num">
+            % Perda
+            <span class="info" data-msg="Percentual de ligações perdidas em relação ao total.">i</span>
+          </th>
+
+          <th>
+            Ações
+            <span class="info" data-msg="Acesse o detalhamento de ligações da loja.">i</span>
+          </th>
         </tr>
       </thead>
+
       <tbody>
         {% for r in rows %}
         <tr>
@@ -53,22 +80,23 @@
           <td class="num">{{ r['Perdidas'] }}</td>
           <td class="num">{{ r['Volume'] }}</td>
           <td class="num">
-  {% if r['Volume']|int > 0 %}
-    {% set pct = (r['pct'] or 0.0)|round(2) %}
-    <span class="
-      {% if pct>=15 %}chip chip--danger
-      {% elif pct>=8 %}chip chip--warn
-      {% else %}chip chip--ok
-      {% endif %}">
-      {{ "%.2f"|format(pct) }}%
-    </span>
-  {% else %}
-    <span class="muted">—</span>
-  {% endif %}
-</td>
-
+            {% if r['Volume']|int > 0 %}
+              {% set pct = (r['pct'] or 0.0)|round(2) %}
+              <span class="
+                {% if pct>=15 %}chip chip--danger
+                {% elif pct>=8 %}chip chip--warn
+                {% else %}chip chip--ok
+                {% endif %}">
+                {{ "%.2f"|format(pct) }}%
+              </span>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
           <td>
-            <a class="link" href="{{ url_for('bp.public_store_detail', ym=ym, store_slug=r['Loja']|lower|replace(' ', '-')) }}">Ver ligações</a>
+            <a class="link" href="{{ url_for('bp.public_store_detail', ym=ym, store_slug=r['Loja']|lower|replace(' ', '-')) }}">
+              Ver ligações
+            </a>
           </td>
         </tr>
         {% endfor %}
@@ -83,20 +111,118 @@
   .actions .btn { margin-left:8px; }
   .muted { color:#9aa3b2; margin: 4px 0 12px 0; }
   .order-bar { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
-  .pill { padding:6px 10px; border-radius:999px; border:1px solid #2b3645; color:#dbe2ea; text-decoration:none; }
-  .pill.active { background:#0ea5e9; border-color:#0ea5e9; color:#fff; }
+  .btn-row .btn + .btn { margin-left:8px; }
+
   .table-scroll { overflow:auto; border:1px solid #223047; border-radius:12px; }
-  .table { width:100%; border-collapse:separate; border-spacing:0; min-width:760px;}
-  .table th, .table td { padding:10px 12px; border-bottom:1px solid #1f2a3a; vertical-align:middle;}
-  .table thead th { background:#17202d; position:sticky; top:0; z-index:1;}
+  .table { width:100%; border-collapse:separate; border-spacing:0; min-width:760px; }
+  .table th, .table td { padding:10px 12px; border-bottom:1px solid #1f2a3a; vertical-align:middle; }
+  .table thead th { background:#17202d; position:sticky; top:0; z-index:1; }
   .num { text-align:right; white-space:nowrap; }
+
   .btn { padding:8px 12px; border-radius:10px; border:1px solid #2b3645; background:#0f1722; color:#e5efff; text-decoration:none; }
   .btn--success { background:#16a34a; border-color:#16a34a; color:#fff; }
+
   .chip { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; }
   .chip--ok { background:#1c4730; color:#b7ffd1; }
   .chip--warn { background:#4b4306; color:#fff2a1; }
   .chip--danger { background:#4b0b0b; color:#ffc0c0; }
+
   .link { color:#7cc4ff; text-decoration:none; }
   .link:hover { text-decoration:underline; }
+
+  /* Barra flutuante central */
+#info-bar {
+  position: fixed;
+  top: 20px;             /* distância do topo */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111827;
+  color: #fff;
+  padding: 10px 16px;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 720px;
+  width: fit-content;
+  z-index: 999999;        /* por cima de tudo */
+  box-shadow: 0 6px 24px rgba(0,0,0,.35);
+  transition: opacity .25s ease-in-out;
+}
+
+#info-bar[hidden] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#info-bar .close {
+  margin-left: 10px;
+  opacity: .9;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+
+.info {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 6px;
+  background: #0ea5e9;         /* azul Estrela vibes */
+  color: #ffffff;              /* ícone branco */
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
+  transition: background .2s, transform .15s;
+}
+
+.info svg {
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+/* Hover com vibe moderna */
+.info:hover {
+  background: #38bdf8;
+  transform: scale(1.15);
+}
+
+
 </style>
+
+<script>
+(function () {
+  const bar = document.getElementById('info-bar');
+  let hideTimeout = null;
+
+  document.addEventListener('click', (e) => {
+    // Clique no "i"
+    if (e.target.classList.contains('info')) {
+      const msg = e.target.dataset.msg || '';
+      bar.innerHTML = msg + '<span class="close" title="Fechar"> ×</span>';
+      bar.hidden = false;
+
+      // reseta timeout se estiver aberto
+      clearTimeout(hideTimeout);
+
+      // AUTO-SUMIR DEPOIS DE 4 SEGUNDOS
+      hideTimeout = setTimeout(() => {
+        bar.hidden = true;
+      }, 4000);
+
+      return;
+    }
+
+    // Clique no X -> fecha na hora
+    if (e.target.classList.contains('close')) {
+      clearTimeout(hideTimeout);
+      bar.hidden = true;
+      return;
+    }
+  });
+})();
+</script>
+
 {% endblock %}
