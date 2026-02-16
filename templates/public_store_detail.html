@@ -14,7 +14,7 @@
     atendida
   </a>
   <a class="pill {{ 'active' if filter_sel=='expulsa' else '' }}" href="{{ url_for('bp.public_store_detail', ym=ym, store_slug=store|lower|replace(' ','-'), f='expulsa') }}">
-    Televendas não atendeu
+    setor Whatsapp não atendeu
   </a>
   <a class="pill {{ 'active' if filter_sel=='Cliente desistiu' else '' }}" href="{{ url_for('bp.public_store_detail', ym=ym, store_slug=store|lower|replace(' ','-'), f='Cliente desistiu') }}">
     Cliente desistiu
@@ -32,7 +32,7 @@
   </a>
   <a class="chip {{ 'chip--active' if filter_sel=='expulsa' else '' }}"
      href="{{ url_for('bp.public_store_detail', ym=ym, store_slug=store|lower|replace(' ','-'), f='expulsa') }}">
-     Televendas não atendeu <span class="badge">{{ badges['expulsa'] }}</span>
+     setor Whatsapp não atendeu <span class="badge">{{ badges['expulsa'] }}</span>
   </a>
   <a class="chip {{ 'chip--active' if filter_sel=='Cliente desistiu' else '' }}"
      href="{{ url_for('bp.public_store_detail', ym=ym, store_slug=store|lower|replace(' ','-'), f='Cliente desistiu') }}">
@@ -59,7 +59,7 @@
 <!-- Badges de legenda -->
 <div class="flex flex-wrap gap-2 mb-3 text-xs">
   <span class="px-2 py-1 rounded bg-emerald-900/40 border border-emerald-800">atendida</span>
-  <span class="px-2 py-1 rounded bg-amber-900/40 border border-amber-700">Televendas não atendeu</span>
+  <span class="px-2 py-1 rounded bg-amber-900/40 border border-amber-700">setor Whatsapp não atendeu</span>
   <span class="px-2 py-1 rounded bg-rose-900/40 border border-rose-800">Cliente desistiu</span>
   <span class="px-2 py-1 rounded bg-slate-800 border border-slate-700">demais status</span>
 </div>
@@ -79,7 +79,7 @@
       {% set cls = 'bg-slate-900' %}
       {% if 'atendida' in st %}
         {% set cls = 'bg-emerald-900/10' %}
-      {% elif 'Televendas não atendeu' in st %}
+      {% elif 'setor Whatsapp não atendeu' in st %}
         {% set cls = 'bg-amber-900/10' %}
       {% elif 'abandona' in st %}
         {% set cls = 'bg-rose-900/10' %}

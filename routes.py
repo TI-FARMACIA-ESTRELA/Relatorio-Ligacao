@@ -11,7 +11,7 @@ from processing import load_calls_only, agregados_por_loja, detalhe_chamadas
 
 # ======= Constantes de status (PT-BR) para filtros =======
 STATUS_HANDLED   = {"atendida"}
-STATUS_EVICTED   = {"Televendas não atendeu"}
+STATUS_EVICTED   = {"setor Whatsapp não atendeu"}
 STATUS_ABANDONED = {"Cliente desistiu"}
 STATUS_LOST_ALL  = STATUS_EVICTED | STATUS_ABANDONED | {"não atendida", "tempo esgotado", "cancelada"}
 
@@ -206,12 +206,12 @@ def public_store_detail(ym, store_slug):
 
     badges = {
         "atendida": counts.get("atendida", 0),
-        "expulsa": counts.get("Televendas não atendeu", 0),
+        "expulsa": counts.get("setor Whatsapp não atendeu", 0),
         "Cliente desistiu": counts.get("Cliente desistiu", 0),
         "outros": len(calls[calls["store"] == loja])
         - (
             counts.get("atendida", 0)
-            + counts.get("Televendas não atendeu", 0)
+            + counts.get("setor Whatsapp não atendeu", 0)
             + counts.get("Cliente desistiu", 0)
         ),
     }

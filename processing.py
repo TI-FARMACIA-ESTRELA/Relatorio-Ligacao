@@ -56,12 +56,12 @@ STATUS_PT = {
     "timeout": "tempo esgotado",
     "cancel": "cancelada",
 
-    "evicted system": "Televendas não atendeu",
-    "evicted by system": "Televendas não atendeu",
+    "evicted system": "setor Whatsapp não atendeu",
+    "evicted by system": "setor Whatsapp não atendeu",
 }
 
 # chave pra contar “perdidas”
-LOST_PT = {"Cliente desistiu", "não atendida", "tempo esgotado", "cancelada", "Televendas não atendeu"}
+LOST_PT = {"Cliente desistiu", "não atendida", "tempo esgotado", "cancelada", "setor Whatsapp não atendeu"}
 LOST_PT_LOWER = {s.lower() for s in LOST_PT}
 
 def _status_pt(v: str) -> str:
